@@ -36,7 +36,7 @@ export function NLPTypeSelector({
   const renderCategory = (
     category: CategoryStructure,
     level: number = 0
-  ): JSX.Element | null => {
+  ): React.JSX.Element | null => {
     // Skip categories with no available types
     if (!hasAvailableTypes(category)) {
       return null;
