@@ -14,7 +14,8 @@ export async function exportToPDF(
   pdfDoc.registerFontkit(fontkit);
 
   // Load font with Cyrillic support
-  const fontResponse = await fetch('/Roboto-Regular.ttf');
+  const basePath = process.env.NODE_ENV === 'production' ? '/metaprogramms' : '';
+  const fontResponse = await fetch(`${basePath}/Roboto-Regular.ttf`);
   const fontBytes = await fontResponse.arrayBuffer();
   const customFont = await pdfDoc.embedFont(fontBytes);
 
