@@ -143,8 +143,35 @@ export default function Home() {
     }
   }, [isLoaded]);
 
+  const handleStartTimer = () => {
+    setStartTime(Date.now());
+    setElapsedTime(0);
+    setIsTimerRunning(true);
+    console.log("Timer started automatically");
+    // Don't clear annotations - let user keep them
+  };
+
+  const handleStopTimer = () => {
+    setIsTimerRunning(false);
+    setStartTime(null);
+  };
+
+  const handleResetTimer = () => {
+    setStartTime(null);
+    setElapsedTime(0);
+    setIsTimerRunning(false);
+    // Don't clear annotations - let user keep them
+  };
+
   const handleAddMark = (start: number, end: number) => {
     if (!selectedTypeId) return;
+
+    // Auto-start timer when annotation is made (if not already running)
+    if (!isTimerRunning) {
+      console.log("Auto-starting timer, isTimerRunning:", isTimerRunning);
+      handleStartTimer();
+    }
+
     addMark(text, selectedTypeId, start, end);
   };
 
@@ -170,25 +197,6 @@ export default function Home() {
     setText(data.text);
     setMarks(data.marks);
     handleStopTimer();
-  };
-
-  const handleStartTimer = () => {
-    setStartTime(Date.now());
-    setElapsedTime(0);
-    setIsTimerRunning(true);
-    // Don't clear annotations - let user keep them
-  };
-
-  const handleStopTimer = () => {
-    setIsTimerRunning(false);
-    setStartTime(null);
-  };
-
-  const handleResetTimer = () => {
-    setStartTime(null);
-    setElapsedTime(0);
-    setIsTimerRunning(false);
-    // Don't clear annotations - let user keep them
   };
 
   const formatTime = (seconds: number) => {
@@ -309,6 +317,12 @@ export default function Home() {
     if (getSelectionFnRef.current) {
       const selection = getSelectionFnRef.current();
       if (selection) {
+        // Auto-start timer when annotation is made (if not already running)
+        if (!isTimerRunning) {
+          console.log("Auto-starting timer from type selector, isTimerRunning:", isTimerRunning);
+          handleStartTimer();
+        }
+
         // Mark immediately with the captured selection coordinates
         addMark(text, typeId, selection.start, selection.end);
         // Restore the selection so user can click more metaprograms
