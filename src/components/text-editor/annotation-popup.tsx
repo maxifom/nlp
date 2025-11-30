@@ -34,7 +34,7 @@ export function AnnotationPopup({
         <CardContent className="p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm">
-              {marks.length === 1 ? "Annotation" : `${marks.length} Annotations`}
+              {marks.length === 1 ? "Аннотация" : `${marks.length} аннотаций`}
             </h3>
             <Button
               variant="ghost"
@@ -65,14 +65,14 @@ export function AnnotationPopup({
                       onClick={() => onRemove(mark.id)}
                       className="h-7 text-xs"
                     >
-                      Remove
+                      Удалить
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     "{mark.text}"
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Position: {mark.startIndex}–{mark.endIndex}
+                    Позиция: {mark.startIndex}–{mark.endIndex}
                   </p>
                 </div>
               </div>

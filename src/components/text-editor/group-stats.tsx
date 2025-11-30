@@ -1,12 +1,11 @@
 "use client";
 
-import { BarChart3, ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import type { Mark, AnnotationType } from "@/types/annotation";
 import { getCategoryStats } from "@/lib/mark-operations";
 import { MAIN_CATEGORIES } from "@/lib/nlp-metaprograms";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface GroupStatsProps {
   marks: Mark[];
@@ -50,16 +49,10 @@ export function GroupStats({ marks, annotationTypes, isFilterActive = false }: G
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BarChart3 className="h-5 w-5" />
-          Статистика по группам
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="pt-6 space-y-4">
         {marks.length === 0 ? (
           <div className="text-center text-muted-foreground py-8">
-            No annotations yet. Start annotating to see group statistics.
+            Аннотаций пока нет. Начните размечать текст, чтобы увидеть статистику по группам.
           </div>
         ) : (
           <div className="space-y-3">
@@ -80,45 +73,48 @@ export function GroupStats({ marks, annotationTypes, isFilterActive = false }: G
                       onClick={() => toggleGroup(stat.categoryName)}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2">
-                        <div className="flex items-center gap-2 flex-1">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
                           {isExpanded ? (
                             <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                           ) : (
                             <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                           )}
-                          <span className="text-sm font-medium">{stat.categoryName}</span>
+                          <span className="text-sm font-medium truncate">{stat.categoryName}</span>
                         </div>
                         <span className="text-xs font-medium whitespace-nowrap">
                           {stat.count} ({stat.percentage.toFixed(1)}%)
                         </span>
                       </div>
-                      <div className="w-full bg-muted rounded-full h-2 overflow-hidden ml-6">
-                        <div
-                          className="bg-primary h-full transition-all duration-300"
-                          style={{ width: `${stat.percentage}%` }}
-                        />
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 flex-shrink-0"></div>
+                        <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
+                          <div
+                            className="bg-primary h-full transition-all duration-300"
+                            style={{ width: `${stat.percentage}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
 
                     {isExpanded && (
-                      <div className="ml-6 mt-3 space-y-2 pt-2 border-t">
+                      <div className="mt-3 space-y-2 pt-2 border-t">
                         {metaprogramsWithCounts.map(({ type, count }) => {
                           const percentage = totalMarks > 0 ? (count / totalMarks) * 100 : 0;
                           return (
-                            <div key={type.id} className="space-y-1">
-                              <div className="flex items-center justify-between text-xs">
-                                <div className="flex items-center gap-2">
+                            <div key={type.id} className="space-y-1 pl-6">
+                              <div className="flex items-center justify-between text-xs gap-2">
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
                                   <div
                                     className="h-2 w-2 rounded-full flex-shrink-0"
                                     style={{ backgroundColor: type.color }}
                                   />
-                                  <span className="text-muted-foreground">{type.name}</span>
+                                  <span className="text-muted-foreground truncate">{type.name}</span>
                                 </div>
-                                <span className="font-medium">
+                                <span className="font-medium whitespace-nowrap">
                                   {count} ({percentage.toFixed(1)}%)
                                 </span>
                               </div>
-                              <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                              <div className="bg-muted rounded-full h-1.5 overflow-hidden">
                                 <div
                                   className="h-full transition-all duration-300"
                                   style={{

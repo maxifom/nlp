@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Highlighter, Type } from "lucide-react";
+import { Highlighter } from "lucide-react";
 import type { Mark, AnnotationType, SelectionMode } from "@/types/annotation";
 import { useTextSelection } from "@/hooks/use-text-selection";
 import { MarkedText } from "./marked-text";
@@ -55,13 +55,13 @@ export function TextEditor({
 
   const handleMarkText = useCallback(() => {
     if (!selectedTypeId) {
-      alert("Please select an annotation type first");
+      alert("Пожалуйста, выберите тип аннотации");
       return;
     }
 
     const selection = getSelection();
     if (!selection) {
-      alert("Please select some text first");
+      alert("Пожалуйста, выделите текст");
       return;
     }
 
@@ -155,41 +155,35 @@ export function TextEditor({
     <Card className="w-full">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Type className="h-5 w-5" />
-            Text Editor
-          </CardTitle>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="selection-mode" className="text-sm">
-                Selection Mode:
-              </Label>
-              <Select
-                value={selectionMode}
-                onValueChange={(value) =>
-                  onSelectionModeChange(value as SelectionMode)
-                }
-              >
-                <SelectTrigger id="selection-mode" className="w-[140px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="character">Character</SelectItem>
-                  <SelectItem value="word">Word</SelectItem>
-                  <SelectItem value="sentence">Sentence</SelectItem>
-                  <SelectItem value="paragraph">Paragraph</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button
-              onClick={handleMarkText}
-              disabled={!selectedTypeId}
-              size="sm"
+          <div className="flex items-center gap-2">
+            <Label htmlFor="selection-mode" className="text-sm">
+              Режим выделения:
+            </Label>
+            <Select
+              value={selectionMode}
+              onValueChange={(value) =>
+                onSelectionModeChange(value as SelectionMode)
+              }
             >
-              <Highlighter className="mr-2 h-4 w-4" />
-              Mark Selection
-            </Button>
+              <SelectTrigger id="selection-mode" className="w-[140px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="character">Символ</SelectItem>
+                <SelectItem value="word">Слово</SelectItem>
+                <SelectItem value="sentence">Предложение</SelectItem>
+                <SelectItem value="paragraph">Абзац</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+          <Button
+            onClick={handleMarkText}
+            disabled={!selectedTypeId}
+            size="sm"
+          >
+            <Highlighter className="mr-2 h-4 w-4" />
+            Разметить
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

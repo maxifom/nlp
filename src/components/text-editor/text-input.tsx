@@ -1,7 +1,6 @@
 "use client";
 
-import { FileText } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 
 interface TextInputProps {
@@ -12,21 +11,15 @@ interface TextInputProps {
 export function TextInput({ text, onTextChange }: TextInputProps) {
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          Text Input
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <Textarea
           value={text}
           onChange={(e) => onTextChange(e.target.value)}
-          placeholder="Enter or paste your text here..."
+          placeholder="Введите или вставьте текст здесь..."
           className="min-h-[150px] max-h-[400px] font-mono text-sm resize-y"
         />
         <p className="text-xs text-muted-foreground mt-2">
-          {text.length} characters
+          {text.length} символов
         </p>
       </CardContent>
     </Card>

@@ -1,4 +1,5 @@
 import type { Mark, AnnotationType } from "@/types/annotation";
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 
 const STORAGE_KEYS = {
   TEXT: "metaprogramms_text",
@@ -120,4 +121,54 @@ export function importFromJSON(jsonString: string): ImportedData {
   } catch (error) {
     throw new Error(`Failed to import JSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
+}
+
+// URL-based sharing functions
+export interface ShareData {
+  text: string;
+  marks: Mark[];
+}
+
+export function generateShareUrl(text: string, marks: Mark[]): string {
+  const data: ShareData = { text, marks };
+  const jsonString = JSON.stringify(data);
+  const compressed = compressToEncodedURIComponent(jsonString);
+
+  const baseUrl = typeof window !== "undefined"
+    ? `${window.location.origin}${window.location.pathname}`
+    : "";
+
+  return `${baseUrl}#share=${compressed}`;
+}
+
+export function loadFromShareUrl(): ShareData | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const hash = window.location.hash;
+    if (!hash.startsWith("#share=")) return null;
+
+    const compressed = hash.substring(7); // Remove "#share="
+    const jsonString = decompressFromEncodedURIComponent(compressed);
+
+    if (!jsonString) {
+      throw new Error("Failed to decompress share data");
+    }
+
+    const data = JSON.parse(jsonString);
+
+    if (!data.text || !Array.isArray(data.marks)) {
+      throw new Error("Invalid share data format");
+    }
+
+    return data as ShareData;
+  } catch (error) {
+    console.error("Failed to load from share URL:", error);
+    return null;
+  }
+}
+
+export function clearShareUrl(): void {
+  if (typeof window === "undefined") return;
+  window.history.replaceState(null, "", window.location.pathname);
 }

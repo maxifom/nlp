@@ -31,12 +31,12 @@ export function MarksList({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <List className="h-5 w-5" />
-            Annotations ({marks.length})
+            Аннотации ({marks.length})
           </CardTitle>
           {marks.length > 0 && (
             <Button variant="destructive" size="sm" onClick={onClearAll}>
               <Trash2 className="mr-2 h-4 w-4" />
-              Clear All
+              Очистить всё
             </Button>
           )}
         </div>
@@ -58,7 +58,7 @@ export function MarksList({
 
         {sortedMarks.length === 0 ? (
           <div className="text-center text-muted-foreground py-8">
-            No annotations yet. Select text and mark it to get started.
+            Аннотаций пока нет. Выделите текст и разметьте его, чтобы начать.
           </div>
         ) : (
           <ScrollArea className="h-[400px] w-full rounded-md border p-4">

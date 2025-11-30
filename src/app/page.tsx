@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Undo2, Redo2, BookOpen, Timer, BarChart3, Play, Square, RotateCcw } from "lucide-react";
-import type { AnnotationType, SelectionMode } from "@/types/annotation";
+import type { AnnotationType, SelectionMode, Mark } from "@/types/annotation";
 import { useMarkingState } from "@/hooks/use-marking-state";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { NLP_METAPROGRAMS, SAMPLE_RUSSIAN_TEXT, MAIN_CATEGORIES } from "@/lib/nlp-metaprograms";
@@ -10,6 +10,8 @@ import {
   loadText,
   loadMarks,
   saveText,
+  loadFromShareUrl,
+  clearShareUrl,
 } from "@/lib/storage";
 import { TextInput } from "@/components/text-editor/text-input";
 import { TextEditor } from "@/components/text-editor/text-editor";
@@ -56,28 +58,47 @@ export default function Home() {
   useEffect(() => {
     console.log("Loading data from localStorage...");
 
-    const savedText = loadText();
-    const savedMarks = loadMarks();
+    // First, check if there's shared data in the URL
+    const sharedData = loadFromShareUrl();
 
-    console.log("Loaded:", {
-      hasText: !!savedText,
-      textLength: savedText?.length || 0,
-      marksCount: savedMarks?.length || 0,
-    });
+    if (sharedData) {
+      console.log("Loading from share URL:", {
+        textLength: sharedData.text.length,
+        marksCount: sharedData.marks.length,
+      });
 
-    // Set text (use saved text or fallback to sample)
-    if (savedText) {
-      setText(savedText);
-      console.log("Restored saved text");
+      setText(sharedData.text);
+      setMarks(sharedData.marks);
+
+      // Clear the URL hash to prevent re-loading on refresh
+      clearShareUrl();
+
+      console.log("Loaded shared data from URL");
     } else {
-      setText(SAMPLE_RUSSIAN_TEXT);
-      console.log("Using sample text (no saved text found)");
-    }
+      // Load from localStorage
+      const savedText = loadText();
+      const savedMarks = loadMarks();
 
-    // Set marks
-    if (savedMarks && savedMarks.length > 0) {
-      setMarks(savedMarks);
-      console.log(`Restored ${savedMarks.length} marks`);
+      console.log("Loaded:", {
+        hasText: !!savedText,
+        textLength: savedText?.length || 0,
+        marksCount: savedMarks?.length || 0,
+      });
+
+      // Set text (use saved text or fallback to sample)
+      if (savedText) {
+        setText(savedText);
+        console.log("Restored saved text");
+      } else {
+        setText(SAMPLE_RUSSIAN_TEXT);
+        console.log("Using sample text (no saved text found)");
+      }
+
+      // Set marks
+      if (savedMarks && savedMarks.length > 0) {
+        setMarks(savedMarks);
+        console.log(`Restored ${savedMarks.length} marks`);
+      }
     }
 
     // Use static NLP metaprograms
@@ -500,7 +521,7 @@ export default function Home() {
               <span>Отменить</span>
               <kbd className="px-2 py-1 bg-muted rounded text-xs">M</kbd>
               <span>Разметить</span>
-              <span className="text-xs text-muted-foreground ml-4">• Auto-save enabled</span>
+              <span className="text-xs text-muted-foreground ml-4">• Авто-сохранение включено</span>
             </div>
           </div>
         </div>

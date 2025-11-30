@@ -1,10 +1,10 @@
 "use client";
 
-import { Download, FileJson, FileText, FileType, Upload } from "lucide-react";
+import { Download, FileJson, FileText, FileType, Upload, Link2 } from "lucide-react";
 import { useRef } from "react";
 import { toast } from "sonner";
 import type { Mark, AnnotationType } from "@/types/annotation";
-import { exportToJSON, downloadFile, importFromJSON } from "@/lib/storage";
+import { exportToJSON, downloadFile, importFromJSON, generateShareUrl } from "@/lib/storage";
 import { exportToPDF } from "@/lib/pdf-export";
 import { Button } from "@/components/ui/button";
 import {
@@ -84,15 +84,32 @@ export function ExportMenu({
         const content = event.target?.result as string;
         const imported = importFromJSON(content);
         onImport({ text: imported.text, marks: imported.marks });
-        toast.success(`Import successful: Loaded ${imported.marks.length} annotations`);
+        toast.success(`Импорт выполнен: Загружено ${imported.marks.length} аннотаций`);
       } catch (error) {
-        toast.error(`Import failed: ${error instanceof Error ? error.message : "Invalid JSON file"}`);
+        toast.error(`Ошибка импорта: ${error instanceof Error ? error.message : "Неверный формат JSON"}`);
       }
     };
     reader.readAsText(file);
 
     // Reset input so same file can be loaded again
     e.target.value = "";
+  };
+
+  const handleGenerateShareLink = async () => {
+    try {
+      const shareUrl = generateShareUrl(text, marks);
+
+      // Copy to clipboard
+      await navigator.clipboard.writeText(shareUrl);
+
+      toast.success("Ссылка скопирована в буфер обмена!", {
+        description: `${marks.length} аннотаций готовы к публикации`,
+      });
+    } catch (error) {
+      toast.error("Не удалось создать ссылку", {
+        description: error instanceof Error ? error.message : "Неизвестная ошибка",
+      });
+    }
   };
 
   return (
@@ -108,30 +125,37 @@ export function ExportMenu({
         <DropdownMenuTrigger asChild>
           <Button variant="outline">
             <Download className="mr-2 h-4 w-4" />
-            Export/Import
+            Экспорт/Импорт
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>Export</DropdownMenuLabel>
+          <DropdownMenuLabel>Поделиться</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleGenerateShareLink}>
+            <Link2 className="mr-2 h-4 w-4" />
+            Создать ссылку для публикации
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Экспорт</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleExportPDF}>
             <FileType className="mr-2 h-4 w-4" />
-            Export as PDF
+            Экспорт в PDF
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleExportJSON}>
             <FileJson className="mr-2 h-4 w-4" />
-            Export as JSON
+            Экспорт в JSON
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleExportPlainText}>
             <FileText className="mr-2 h-4 w-4" />
-            Export as Plain Text
+            Экспорт в текст
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuLabel>Import</DropdownMenuLabel>
+          <DropdownMenuLabel>Импорт</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleImportClick}>
             <Upload className="mr-2 h-4 w-4" />
-            Import from JSON
+            Импорт из JSON
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
